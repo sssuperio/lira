@@ -72,6 +72,7 @@ bower_components/
 # Build and release output
 bin/
 dist/
+!/web/dist/.keep
 build/
 out/
 target/
@@ -153,3 +154,9 @@ Desktop.ini
 .task/
 .codex/
 .agents/
+
+# Lira-specific
+/data/
+/web/dist/*
+!/web/dist/.keep
+/bin/lira

@@ -1,0 +1,5 @@
+.svelte-kit
+web/dist
+node_modules
+build
+package

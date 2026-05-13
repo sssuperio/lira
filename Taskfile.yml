@@ -1,0 +1,82 @@
+version: '3'
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+    silent: true
+
+  install:
+    desc: Install frontend dependencies
+    cmds:
+      - pnpm install
+
+  dev:
+    desc: Start server and Vite dev server
+    deps:
+      - dev:server
+      - dev:web
+
+  dev:web:
+    desc: Start Vite development server
+    deps: [install]
+    cmds:
+      - pnpm run dev -- --open
+
+  dev:server:
+    desc: Start Go server
+    cmds:
+      - go run . --addr :8090 --data-dir ./data
+
+  build:
+    desc: Build embedded web app and Lira binary
+    deps: [build:web]
+    cmds:
+      - go build -o ./bin/lira .
+
+  build:web:
+    desc: Build the web app for embedding
+    cmds:
+      - pnpm run build
+
+  run:
+    desc: Run the built binary
+    cmds:
+      - go run .
+
+  test:
+    desc: Run Go tests
+    cmds:
+      - go test ./...
+
+  test:unit:
+    desc: Run frontend unit tests
+    cmds:
+      - pnpm run test:unit
+
+  lint:
+    desc: Run lint checks
+    cmds:
+      - task lint:design
+
+  lint:design:
+    cmds:
+      - if [ -f DESIGN.md ]; then npx --yes @google/design.md lint DESIGN.md; fi
+
+  format:
+    desc: Format the codebase
+    cmds:
+      - go fmt ./...
+      - pnpm run format
+
+  docker:build:
+    desc: Build Docker image
+    cmds:
+      - docker build -t lira:latest .
+
+  docker:run:
+    desc: Run Docker image
+    deps: [docker:build]
+    cmds:
+      - docker run --rm -p 8080:8080 -v lira-data:/app/data lira:latest

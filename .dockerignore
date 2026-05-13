@@ -1,0 +1,10 @@
+node_modules
+.svelte-kit
+build
+data
+bin
+.git
+.env
+.env.*
+*.tmp
+*.log

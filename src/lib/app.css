@@ -1,0 +1,10 @@
+html,
+body {
+	@apply h-full w-full overflow-hidden bg-stone-950 text-stone-200 antialiased;
+	font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #57534e transparent;
+}
