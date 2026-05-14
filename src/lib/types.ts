@@ -141,6 +141,17 @@ export const MATERIAL_LABELS: Record<LiraMaterial, string> = {
 	toy: 'Toy'
 };
 
+export const MOOD_COLORS: Record<LiraMood, { accent: string; bg: string; border: string; text: string; glow: string }> = {
+	calm:       { accent: '#60a5fa', bg: '#1e3a5f', border: '#3b82f6', text: '#93bbfd', glow: 'rgba(96,165,250,0.25)' },
+	happy:      { accent: '#fbbf24', bg: '#5c4a0a', border: '#f59e0b', text: '#fcd34d', glow: 'rgba(251,191,36,0.25)' },
+	curious:    { accent: '#34d399', bg: '#0f3d2e', border: '#10b981', text: '#6ee7b7', glow: 'rgba(52,211,153,0.25)' },
+	tense:      { accent: '#f87171', bg: '#4a1a1a', border: '#ef4444', text: '#fca5a5', glow: 'rgba(248,113,113,0.25)' },
+	magic:      { accent: '#a78bfa', bg: '#2d1b69', border: '#8b5cf6', text: '#c4b5fd', glow: 'rgba(167,139,250,0.25)' },
+	mechanical: { accent: '#a8a29e', bg: '#292524', border: '#78716c', text: '#d6d3d1', glow: 'rgba(168,162,158,0.25)' },
+	aquatic:    { accent: '#22d3ee', bg: '#0f3d4a', border: '#06b6d4', text: '#67e8f9', glow: 'rgba(34,211,238,0.25)' },
+	warm:       { accent: '#fb923c', bg: '#4a2a0a', border: '#f97316', text: '#fdba74', glow: 'rgba(251,146,60,0.25)' },
+};
+
 export const SHAPE_LABELS: Record<LiraShape, string> = {
 	rise: 'Rise',
 	fall: 'Fall',

@@ -10,26 +10,30 @@
 		project,
 		recordExport
 	} from '$lib/stores/project';
-	import { generateAudio, playAudioBuffer, generateSoundEvents } from '$lib/audio/engine';
+	import { generateAudio, playAudioBuffer } from '$lib/audio/engine';
 	import { downloadWav, downloadSketchJSON, downloadZip, makeExportRecord } from '$lib/audio/export';
 	import ParamControl from '$lib/components/ParamControl.svelte';
+	import SketchCanvas from '$lib/components/SketchCanvas.svelte';
 	import {
 		MOODS,
 		MATERIALS,
 		SHAPES,
 		MOOD_LABELS,
 		MATERIAL_LABELS,
-		SHAPE_LABELS
+		SHAPE_LABELS,
+		MOOD_COLORS
 	} from '$lib/types';
-	import type { LiraSketch } from '$lib/types';
+	import type { LiraMood, LiraShape, LiraSketch } from '$lib/types';
 
 	let sketch: LiraSketch | null = null;
 	let isPlaying = false;
 	let stopFn: (() => void) | null = null;
 	let audioBuffer: AudioBuffer | null = null;
 	let isGenerating = false;
+	let showCanvas = true;
 
 	const sketchId = $page.params.id;
+	$: moodColors = sketch ? MOOD_COLORS[sketch.mood as LiraMood] : MOOD_COLORS.magic;
 
 	onMount(async () => {
 		await loadProject();
@@ -45,6 +49,27 @@
 	function updateField(field: keyof LiraSketch, value: number | string) {
 		if (!sketch) return;
 		sketch = { ...sketch, [field]: value, updatedAt: new Date().toISOString() };
+	}
+
+	function applyDrawingParams(params: {
+		shape: LiraShape;
+		density: number;
+		brightness: number;
+		softness: number;
+		movement: number;
+		pictureSeed: string;
+	}) {
+		if (!sketch) return;
+		sketch = {
+			...sketch,
+			shape: params.shape,
+			density: params.density,
+			brightness: params.brightness,
+			softness: params.softness,
+			movement: params.movement,
+			seed: params.pictureSeed,
+			updatedAt: new Date().toISOString()
+		};
 	}
 
 	async function generate() {
@@ -127,7 +152,7 @@
 </script>
 
 {#if sketch}
-	<div class="mx-auto max-w-3xl p-6">
+	<div class="mx-auto max-w-5xl p-6">
 		<div class="mb-6 flex items-center gap-3">
 			<button
 				on:click={() => goto('/sketches')}
@@ -136,11 +161,20 @@
 				← Gallery
 			</button>
 			<h1 class="m-0 text-xl font-bold text-stone-100">Edit sketch</h1>
+			<div class="ml-auto flex items-center gap-2 text-xs">
+				<button
+					on:click={() => (showCanvas = !showCanvas)}
+					class="rounded-lg px-3 py-1 transition-colors"
+					style="background: {showCanvas ? moodColors.bg : '#292524'}; color: {showCanvas ? moodColors.text : '#78716c'}"
+				>
+					{showCanvas ? '✎ Canvas' : '☰ Sliders only'}
+				</button>
+			</div>
 		</div>
 
-		<div class="grid gap-6 lg:grid-cols-2">
-			<!-- Left column: name + basic params -->
-			<div class="space-y-4">
+		<div class="grid gap-6 lg:grid-cols-3">
+			<!-- Left column: basic params -->
+			<div class="space-y-4 lg:col-span-1">
 				<div>
 					<label class="text-xs font-medium text-stone-400">Name</label>
 					<input
@@ -186,8 +220,16 @@
 				/>
 			</div>
 
-			<!-- Right column: sliders -->
-			<div class="space-y-4">
+			<!-- Middle: drawing canvas -->
+			<div class="lg:col-span-1">
+				<SketchCanvas
+					mood={sketch.mood}
+					onApply={applyDrawingParams}
+				/>
+			</div>
+
+			<!-- Right column: fine-tuning sliders -->
+			<div class="space-y-4 lg:col-span-1">
 				<ParamControl
 					label="Density"
 					bind:value={sketch.density}
@@ -238,7 +280,8 @@
 			<button
 				on:click={generate}
 				disabled={isGenerating}
-				class="rounded-xl bg-violet-700 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-violet-600 disabled:opacity-50"
+				class="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-50"
+				style="background: {moodColors.accent}; box-shadow: 0 0 20px {moodColors.glow}"
 			>
 				{isGenerating ? 'Generating...' : '⚡ Generate'}
 			</button>

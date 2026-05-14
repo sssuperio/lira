@@ -70,6 +70,33 @@ tasks:
       - go fmt ./...
       - pnpm run format
 
+  serve:
+    desc: Build, start server on random port, and expose via public tunnel
+    deps: [build]
+    cmds:
+      - |
+        set -e
+        PORT=$((8000 + RANDOM % 2000))
+        echo "→ Building..."
+        echo "→ Starting Lira on :$PORT"
+        ./bin/lira --addr :$PORT --data-dir ./data &
+        LIRA_PID=$!
+        sleep 1
+        echo "→ Opening tunnel..."
+        npx --yes localtunnel --port $PORT 2>&1 &
+        TUNNEL_PID=$!
+        sleep 8
+        echo "✓ Lira is live (PID $LIRA_PID, Tunnel PID $TUNNEL_PID)"
+        echo "  Press Ctrl+C to stop"
+        wait $TUNNEL_PID
+      - task: stop
+
+  stop:
+    desc: Stop all running Lira and tunnel processes
+    cmds:
+      - pkill -f "bin/lira" 2>/dev/null || true
+      - pkill -f localtunnel 2>/dev/null || true
+
   docker:build:
     desc: Build Docker image
     cmds:
