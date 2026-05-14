@@ -226,7 +226,7 @@
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
 	>
-		<!-- Grid -->
+		<!-- Grid (pointer-events disabled so it doesn't block drawing) -->
 		{#each Array(12) as _, i}
 			<line
 				x1={0}
@@ -235,6 +235,7 @@
 				y2={(i / 12) * canvasHeight}
 				stroke="#292524"
 				stroke-width="0.5"
+				pointer-events="none"
 			/>
 		{/each}
 		{#each Array(16) as _, i}
@@ -245,10 +246,11 @@
 				y2={canvasHeight}
 				stroke="#292524"
 				stroke-width="0.5"
+				pointer-events="none"
 			/>
 		{/each}
 
-		<!-- Past strokes -->
+		<!-- Past strokes (visual only, don't catch pointer) -->
 		{#each strokes as stroke}
 			<path
 				d={strokePath(stroke.points)}
@@ -257,11 +259,12 @@
 				stroke-width="3"
 				stroke-linecap="round"
 				stroke-linejoin="round"
+				pointer-events="none"
 				style="filter: drop-shadow(0 0 6px {colors.glow})"
 			/>
 		{/each}
 
-		<!-- Current stroke -->
+		<!-- Current stroke (visual only) -->
 		{#if currentStroke.length > 1}
 			<path
 				d={strokePath(currentStroke)}
@@ -270,12 +273,13 @@
 				stroke-width="3"
 				stroke-linecap="round"
 				stroke-linejoin="round"
+				pointer-events="none"
 				opacity="0.8"
 				style="filter: drop-shadow(0 0 8px {colors.glow})"
 			/>
 		{/if}
 
-		<!-- Placeholder text -->
+		<!-- Placeholder text (pointer-events off so drawing passes through) -->
 		{#if strokes.length === 0 && currentStroke.length === 0}
 			<text
 				x={canvasWidth / 2}
@@ -283,6 +287,7 @@
 				text-anchor="middle"
 				fill="#44403c"
 				font-size="14"
+				pointer-events="none"
 			>
 				Draw a sound shape here
 			</text>
