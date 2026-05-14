@@ -26,19 +26,16 @@
 	let detectedParams = { density: 5, brightness: 7, softness: 6, movement: 5 };
 	let pictureSeed = '';
 
-	let svgEl: SVGSVGElement;
-
 	function toLocal(e: PointerEvent): Point {
-		const rect = svgEl.getBoundingClientRect();
 		return {
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
+			x: e.offsetX,
+			y: e.offsetY,
 			t: Date.now()
 		};
 	}
 
 	function onPointerDown(e: PointerEvent) {
-		svgEl.setPointerCapture(e.pointerId);
+		(e.currentTarget as Element).setPointerCapture(e.pointerId);
 		currentStroke = [];
 		isDrawing = true;
 		currentStroke = [toLocal(e)];
@@ -216,83 +213,87 @@
 		</button>
 	</div>
 
-	<svg
-		bind:this={svgEl}
-		width={canvasWidth}
-		height={canvasHeight}
-		class="cursor-crosshair rounded-xl border"
-		style="background: #1c1917; border-color: {colors.border}40; touch-action: none;"
-		onpointerdown={onPointerDown}
-		onpointermove={onPointerMove}
-		onpointerup={onPointerUp}
-	>
-		<!-- Grid (pointer-events disabled so it doesn't block drawing) -->
-		{#each Array(12) as _, i}
-			<line
-				x1={0}
-				y1={(i / 12) * canvasHeight}
-				x2={canvasWidth}
-				y2={(i / 12) * canvasHeight}
-				stroke="#292524"
-				stroke-width="0.5"
-				pointer-events="none"
-			/>
-		{/each}
-		{#each Array(16) as _, i}
-			<line
-				x1={(i / 16) * canvasWidth}
-				y1={0}
-				x2={(i / 16) * canvasWidth}
-				y2={canvasHeight}
-				stroke="#292524"
-				stroke-width="0.5"
-				pointer-events="none"
-			/>
-		{/each}
+	<div class="relative inline-block overflow-hidden rounded-xl border" style="border-color: {colors.border}40; line-height: 0;">
+		<svg
+			width={canvasWidth}
+			height={canvasHeight}
+			style="background: #1c1917; display: block;"
+		>
+			<!-- Grid -->
+			{#each Array(12) as _, i}
+				<line
+					x1={0}
+					y1={(i / 12) * canvasHeight}
+					x2={canvasWidth}
+					y2={(i / 12) * canvasHeight}
+					stroke="#292524"
+					stroke-width="0.5"
+				/>
+			{/each}
+			{#each Array(16) as _, i}
+				<line
+					x1={(i / 16) * canvasWidth}
+					y1={0}
+					x2={(i / 16) * canvasWidth}
+					y2={canvasHeight}
+					stroke="#292524"
+					stroke-width="0.5"
+				/>
+			{/each}
 
-		<!-- Past strokes (visual only, don't catch pointer) -->
-		{#each strokes as stroke}
-			<path
-				d={strokePath(stroke.points)}
-				fill="none"
-				stroke={colors.accent}
-				stroke-width="3"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				pointer-events="none"
-				style="filter: drop-shadow(0 0 6px {colors.glow})"
-			/>
-		{/each}
+			<!-- Past strokes -->
+			{#each strokes as stroke}
+				<path
+					d={strokePath(stroke.points)}
+					fill="none"
+					stroke={colors.accent}
+					stroke-width="3"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					style="filter: drop-shadow(0 0 6px {colors.glow})"
+				/>
+			{/each}
 
-		<!-- Current stroke (visual only) -->
-		{#if currentStroke.length > 1}
-			<path
-				d={strokePath(currentStroke)}
-				fill="none"
-				stroke={colors.accent}
-				stroke-width="3"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				pointer-events="none"
-				opacity="0.8"
-				style="filter: drop-shadow(0 0 8px {colors.glow})"
-			/>
-		{/if}
+			<!-- Current stroke -->
+			{#if currentStroke.length > 1}
+				<path
+					d={strokePath(currentStroke)}
+					fill="none"
+					stroke={colors.accent}
+					stroke-width="3"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					opacity="0.8"
+					style="filter: drop-shadow(0 0 8px {colors.glow})"
+				/>
+			{/if}
 
-		<!-- Placeholder text (pointer-events off so drawing passes through) -->
-		{#if strokes.length === 0 && currentStroke.length === 0}
-			<text
-				x={canvasWidth / 2}
-				y={canvasHeight / 2}
-				text-anchor="middle"
-				fill="#44403c"
-				font-size="14"
-				pointer-events="none"
-			>
-				Draw a sound shape here
-			</text>
-		{/if}
-	</svg>
+			<!-- Placeholder text -->
+			{#if strokes.length === 0 && currentStroke.length === 0}
+				<text
+					x={canvasWidth / 2}
+					y={canvasHeight / 2}
+					text-anchor="middle"
+					fill="#44403c"
+					font-size="14"
+				>
+					Draw a sound shape here
+				</text>
+			{/if}
+		</svg>
+
+		<!-- Transparent drawing surface overlaid on top of the SVG -->
+		<div
+			class="absolute inset-0 cursor-crosshair"
+			style="touch-action: none;"
+			role="img"
+			aria-label="Drawing canvas - sketch a sound shape"
+			onpointerdown={onPointerDown}
+			onpointermove={onPointerMove}
+			onpointerup={onPointerUp}
+			onpointercancel={onPointerUp}
+		/>
+	</div>
 
 	<!-- Detected params -->
 	<div class="grid grid-cols-5 gap-2 text-center text-xs">
