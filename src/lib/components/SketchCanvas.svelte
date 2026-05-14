@@ -288,10 +288,10 @@
 			style="touch-action: none;"
 			role="img"
 			aria-label="Drawing canvas - sketch a sound shape"
-			onpointerdown={onPointerDown}
-			onpointermove={onPointerMove}
-			onpointerup={onPointerUp}
-			onpointercancel={onPointerUp}
+			on:pointerdown={onPointerDown}
+			on:pointermove={onPointerMove}
+			on:pointerup={onPointerUp}
+			on:pointercancel={onPointerUp}
 		/>
 	</div>
 
