@@ -58,17 +58,17 @@ Lira uses approachable language:
 
 ## Parameters
 
-| Parameter  | Values                                                                 |
-|-----------|------------------------------------------------------------------------|
-| Mood      | calm, happy, curious, tense, magic, mechanical, aquatic, warm          |
-| Material  | glass, wood, bell, bubble, pluck, breath, metal, soft-noise, toy       |
-| Shape     | rise, fall, bounce, pulse, wave, sparkle, swell, pop, orbit            |
-| Density   | 1–10                                                                   |
-| Brightness| 1–10                                                                   |
-| Softness  | 1–10                                                                   |
-| Movement  | 1–10                                                                   |
-| Duration  | 0.2s–10s                                                               |
-| Seed      | any string                                                             |
+| Parameter  | Values                                                           |
+| ---------- | ---------------------------------------------------------------- |
+| Mood       | calm, happy, curious, tense, magic, mechanical, aquatic, warm    |
+| Material   | glass, wood, bell, bubble, pluck, breath, metal, soft-noise, toy |
+| Shape      | rise, fall, bounce, pulse, wave, sparkle, swell, pop, orbit      |
+| Density    | 1–10                                                             |
+| Brightness | 1–10                                                             |
+| Softness   | 1–10                                                             |
+| Movement   | 1–10                                                             |
+| Duration   | 0.2s–10s                                                         |
+| Seed       | any string                                                       |
 
 ## Architecture
 
@@ -143,7 +143,11 @@ task docker:run
 
 # Or manually
 docker build -t lira .
-docker run -p 8080:8080 -v lira-data:/app/data lira
+docker run -p 8080:8080 -v lira-data:/data lira
+
+# Coolify uses docker-compose.yml without host port mappings.
+# Assign a domain to the lira service on container port 8080.
+docker compose up --build
 ```
 
 ## Export formats

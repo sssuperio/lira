@@ -111,4 +111,4 @@ tasks:
     desc: Run Docker image
     deps: [docker:build]
     cmds:
-      - docker run --rm -p 8080:8080 -v lira-data:/app/data lira:latest
+      - docker run --rm -p 8080:8080 -v lira-data:/data lira:latest
